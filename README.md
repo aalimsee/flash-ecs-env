@@ -19,6 +19,10 @@ gh secret set AWS_ACCESS_KEY_ID --repo aalimsee/flask-ecs-env --env dev --body "
 gh secret set AWS_SECRET_ACCESS_KEY --repo aalimsee/flask-ecs-env --env dev --body "<your-secret-key>"
 ```
 
+```
+gh secret set REPO_NAME --repo aalimsee/flask-ecs-env --env dev --body "my-value"
+```
+
 For repo secrets:
 
 ```
