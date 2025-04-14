@@ -1,10 +1,11 @@
-name: Build and Push Docker Image to ECR
+name: Build and Push Docker Image to ECR ENV
 
 on:
   push:
     branches:
       - dev
-  pull_request:  # on pull request to main for docker image build and push to ECR
+
+  pull_request:
     branches:
       - main
       - staging
@@ -31,11 +32,11 @@ jobs:
       - name: Determine Repository Name
         id: repo_name
         run: |
-          if [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
+          if [[ "${GITHUB_REF}" == "refs/heads/dev" ]]; then
             echo "REPO_NAME=lach/dev" >> $GITHUB_ENV
-          elif [[ "${{ github.ref }}" == "refs/heads/staging" ]]; then
+          elif [[ "${GITHUB_REF}" == "refs/heads/staging" ]]; then
             echo "REPO_NAME=lach/staging" >> $GITHUB_ENV
-          elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+          elif [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
             echo "REPO_NAME=lach/prod" >> $GITHUB_ENV
           else
             echo "Branch not allowed to push images"
@@ -44,11 +45,11 @@ jobs:
 
       - name: Build Docker image
         run: |
-          IMAGE_URI=${{secrets.AWS_ACCOUNT_ID}}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com/${{env.REPO_NAME}}
+          IMAGE_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ env.REPO_NAME }}
           docker build -t $IMAGE_URI:latest -t $IMAGE_URI:${{ github.sha }} .
 
       - name: Push Docker image to Amazon ECR
         run: |
-          IMAGE_URI=${{secrets.AWS_ACCOUNT_ID}}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com/${{env.REPO_NAME}}
+          IMAGE_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ env.REPO_NAME }}
           docker push $IMAGE_URI:latest
           docker push $IMAGE_URI:${{ github.sha }}
